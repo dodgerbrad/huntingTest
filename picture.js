@@ -35,19 +35,22 @@ form.addEventListener('submit', e => {
     historyBody.prepend(tempRow);
 
     // 4. Send to Google Sheets
-    fetch(scriptURL, { method: 'POST', body: formData })
-        .then(response => {
-            alert('Hunt Recorded Successfully!');
-            submitButton.disabled = false;
-            submitButton.innerText = "Submit Hunt to Log";
-            form.reset();
-
-            // Remove the "pending" row and refresh the full table
-            if (document.getElementById('temp-row')) {
-                document.getElementById('temp-row').remove();
-            }
-            loadHistory();
-        })
+  fetch(scriptURL, { 
+  method: 'POST', 
+  // This bypasses Safari's strict 'pre-flight' checks
+  mode: 'no-cors', 
+  headers: {
+    'Content-Type': 'text/plain' 
+  },
+  body: formData 
+})
+.then(() => {
+  // NOTE: 'no-cors' mode won't let you read the Google response, 
+  // so we assume success if the code reaches here.
+  alert('Hunt Recorded! Check the table in a moment.');
+  form.reset();
+  loadHistory();
+});
         .catch(error => {
             alert('Error! Check signal. Your entry is still in the list for now.');
             console.error('Submission Error:', error.message);

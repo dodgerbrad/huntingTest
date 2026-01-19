@@ -283,28 +283,24 @@ const previewImg = document.getElementById('imagePreview');
 const statusText = document.getElementById('uploadStatus');
 
 photoInput.addEventListener('change', async (e) => {
-    // 1. Grab the actual file object
     const file = e.target.files[0];
     if (!file) return;
 
-    // 2. Show local preview immediately
+    // Local Preview
     document.getElementById('photoPreviewBox').style.display = 'block';
     previewImg.src = URL.createObjectURL(file);
     statusText.innerText = "Uploading to cloud...";
 
-    // 3. Prepare data for ImgBB
     const formData = new FormData();
     formData.append('image', file);
 
     try {
         const apiKey = 'c35b3973813bbd067239a605b612f231'; 
-
-        // 4. THE FETCH CALL (CRITICAL FIX)
-        // Must include /1/upload AND the $ sign before the curly bracket
-        const response = await fetch(`https://api.imgbb.com{apiKey}`, {
+        
+        // 2026 PRO TIP: Use a simple fetch with NO headers
+        const response = await fetch(`https://api.imgbb.com/{apiKey}`, {
             method: 'POST',
-            // DO NOT manually set Content-Type; let the browser handle it
-            body: formData
+            body: formData // BROWSER SETS HEADERS AUTOMATICALLY
         });
 
         const data = await response.json();
@@ -317,11 +313,12 @@ photoInput.addEventListener('change', async (e) => {
             statusText.innerText = "❌ Upload failed. Check API Key.";
         }
     } catch (error) {
-        // This catch block triggers if the URL is wrong or CORS blocks it
-        console.error("Fetch Error:", error);
-        statusText.innerText = "❌ Connection error. Use Private/Incognito mode.";
+        // Log the exact error to the mobile console for debugging
+        console.error("Detailed Fetch Error:", error);
+        statusText.innerText = "❌ Network error. Check signal.";
     }
 });
+
 
 
 

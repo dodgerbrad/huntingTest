@@ -31,12 +31,14 @@ form.addEventListener('submit', e => {
 
     historyBody.prepend(tempRow);
 
-    fetch(scriptURL, { 
-        method: 'POST', 
-        mode: 'cors', 
-        headers: { 'Content-Type': 'text/plain' },
-        body: formData 
-    })
+  fetch(scriptURL, { 
+  method: 'POST', 
+  mode: 'no-cors', // Bypasses the pre-flight check that Google fails
+  headers: {
+    'Content-Type': 'application/x-www-form-urlencoded' // Use this instead of text/plain for 2026
+  },
+  body: new URLSearchParams(formData).toString() // Converts your form into the format Google likes best
+})
     .then(() => {
         alert('Hunt Recorded! Check the table in a moment.');
         form.reset();

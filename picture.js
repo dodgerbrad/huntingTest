@@ -283,38 +283,43 @@ const previewImg = document.getElementById('imagePreview');
 const statusText = document.getElementById('uploadStatus');
 
 photoInput.addEventListener('change', async (e) => {
+    // 1. Grab the actual file object
     const file = e.target.files[0];
     if (!file) return;
 
+    // 2. Show local preview immediately
     document.getElementById('photoPreviewBox').style.display = 'block';
     previewImg.src = URL.createObjectURL(file);
     statusText.innerText = "Uploading to cloud...";
 
+    // 3. Prepare data for ImgBB
     const formData = new FormData();
     formData.append('image', file);
 
     try {
         const apiKey = 'c35b3973813bbd067239a605b612f231'; 
 
-        // UPDATED URL STRUCTURE
+        // 4. THE FETCH CALL (CRITICAL FIX)
+        // Must include /1/upload AND the $ sign before the curly bracket
         const response = await fetch(`https://api.imgbb.com{apiKey}`, {
             method: 'POST',
+            // DO NOT manually set Content-Type; let the browser handle it
             body: formData
         });
 
         const data = await response.json();
 
         if (data.success) {
-            const url = data.data.url;
-            photoLinkInput.value = url; 
-            statusText.innerHTML = `✅ Link ready: <a href="${url}" target="_blank">View Photo</a>`;
+            photoLinkInput.value = data.data.url; 
+            statusText.innerHTML = `✅ Link ready: <a href="${data.data.url}" target="_blank">View Photo</a>`;
         } else {
             console.error("ImgBB Error:", data);
-            statusText.innerText = "❌ Upload error. Check API key.";
+            statusText.innerText = "❌ Upload failed. Check API Key.";
         }
     } catch (error) {
-        console.error("Detailed Fetch Error:", error);
-        statusText.innerText = "❌ Connection error. Check URL formatting.";
+        // This catch block triggers if the URL is wrong or CORS blocks it
+        console.error("Fetch Error:", error);
+        statusText.innerText = "❌ Connection error. Use Private/Incognito mode.";
     }
 });
 

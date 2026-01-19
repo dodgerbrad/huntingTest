@@ -276,6 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadHistory();
 });
 
+// Corrected Photo Input Logic for Golden Triangle Hunting Club (2026)
 const photoInput = document.getElementById('photoCapture');
 const photoLinkInput = document.getElementById('photoLink');
 const previewImg = document.getElementById('imagePreview');
@@ -285,37 +286,47 @@ photoInput.addEventListener('change', async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Show preview and status
+    // 1. Show preview box and image immediately
     document.getElementById('photoPreviewBox').style.display = 'block';
     previewImg.src = URL.createObjectURL(file);
     statusText.innerText = "Uploading to cloud...";
 
+    // 2. Prepare the data for ImgBB
     const formData = new FormData();
     formData.append('image', file);
 
     try {
-        // FIX 1: Use the full /1/upload endpoint
-        // FIX 2: Add your API key as a ?key= parameter in the URL
-        const apiKey = '?key=c35b3973813bbd067239a605b612f231'; 
-      const response = await fetch(`https://api.imgbb.com{apiKey}`, {
-    method: 'POST',
-    body: formData
-});
+        // Your specific ImgBB API Key
+        const apiKey = 'c35b3973813bbd067239a605b612f231'; 
 
+        // 3. The Fetch Call
+        // FIX: Added /1/upload and the correct ?key= syntax using backticks
+        const response = await fetch(`https://api.imgbb.com{apiKey}`, {
+            method: 'POST',
+            // Note: We DO NOT set 'Content-Type' headers here. 
+            // The browser automatically handles it for FormData.
+            body: formData
+        });
+
+        // 4. Handle the response
         const data = await response.json();
 
         if (data.success) {
             const url = data.data.url;
+            
+            // Save the URL into the hidden input so Google Sheets gets it
             photoLinkInput.value = url; 
+            
+            // Success Message
             statusText.innerHTML = `✅ Link ready: <a href="${url}" target="_blank">View Photo</a>`;
         } else {
-            // Log specific error from ImgBB if upload fails
-            console.error("ImgBB Error:", data);
+            console.error("ImgBB Error Response:", data);
             statusText.innerText = "❌ Upload error. Check API key.";
         }
     } catch (error) {
-        console.error("Fetch Error:", error);
-        statusText.innerText = "❌ Network error. Check connection.";
+        // This usually catches DNS (Network) or CORS errors
+        console.error("Detailed Fetch Error:", error);
+        statusText.innerText = "❌ Connection error. Use GitHub HTTPS link.";
     }
 });
 

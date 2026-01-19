@@ -301,10 +301,8 @@ photoInput.addEventListener('change', async (e) => {
 
         // 3. The Fetch Call
         // FIX: Added /1/upload and the correct ?key= syntax using backticks
-        const response = await fetch(`https://api.imgbb.com{apiKey}`, {
+         const response = await fetch(`https://api.imgbb.com{apiKey}`, {
             method: 'POST',
-            // Note: We DO NOT set 'Content-Type' headers here. 
-            // The browser automatically handles it for FormData.
             body: formData
         });
 

@@ -283,65 +283,51 @@ const previewImg = document.getElementById('imagePreview');
 const statusText = document.getElementById('uploadStatus');
 
 photoInput.addEventListener('change', async (e) => {
-    const originalFile = e.target.files[0];
-    if (!originalFile) return;
+    const file = e.target.files[0];
+    if (!file) return;
 
-    // 1. Show the preview box
-    document.getElementById('photoPreviewBox').style.display = 'block';
-    statusText.innerText = "Resizing photo for field signal...";
+    statusText.innerText = "Processing...";
 
-    // 2. Load the image into a "Canvas" to shrink it
     const img = new Image();
-    img.src = URL.createObjectURL(originalFile);
-    
+    img.src = URL.createObjectURL(file);
     img.onload = () => {
         const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-
-        // Set the maximum width for the hunt log (1200px is perfect for mobile)
-        const MAX_WIDTH = 1200;
-        let scale = MAX_WIDTH / img.width;
-        
-        if (scale > 1) scale = 1; // Don't upscale if the photo is already small
-
+        const MAX_WIDTH = 1200; 
+        let scale = Math.min(MAX_WIDTH / img.width, 1);
         canvas.width = img.width * scale;
         canvas.height = img.height * scale;
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
 
-        // Draw the image onto the canvas (this does the resizing)
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-        // Update the preview image with the smaller version
-        previewImg.src = canvas.toDataURL('image/jpeg', 0.7);
-
-        // 3. Convert the Canvas to a Blob (a small file) and Upload
         canvas.toBlob(async (blob) => {
-            statusText.innerText = "Uploading small version (approx 200KB)...";
-
+            statusText.innerText = "Uploading (Small Size)...";
             const formData = new FormData();
             formData.append('image', blob, "harvest.jpg");
 
             try {
-                const apiKey = 'c35b3973813bbd067239a605b612f231'; 
+                const apiKey = 'c35b3973813bbd067239a605b612f231';
+                
+                // FIXED URL BELOW
                 const response = await fetch(`https://api.imgbb.com{apiKey}`, {
                     method: 'POST',
                     body: formData
                 });
 
                 const data = await response.json();
-
                 if (data.success) {
-                    photoLinkInput.value = data.data.url; 
+                    photoLinkInput.value = data.data.url;
                     statusText.innerHTML = `✅ Ready: <a href="${data.data.url}" target="_blank">View Photo</a>`;
                 } else {
-                    statusText.innerText = "❌ Upload failed. Check API Key.";
+                    statusText.innerText = "❌ API Error. Check Key.";
                 }
-            } catch (error) {
-                console.error("Fetch Error:", error);
-                statusText.innerText = "❌ Network error. Check signal.";
+            } catch (err) {
+                statusText.innerText = "❌ Network Error. Check Signal.";
+                console.error(err);
             }
-        }, 'image/jpeg', 0.7); // 0.7 = 70% quality (best balance for 2026 mobile)
+        }, 'image/jpeg', 0.7);
     };
 });
+
+
 
 
 

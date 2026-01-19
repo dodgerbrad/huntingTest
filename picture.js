@@ -1,4 +1,4 @@
-const scriptURL = 'https://script.google.com/macros/s/AKfycbxID0yvH2ZLY02wgAaVm68QfBX8WxLML47R2gyCwUsrjJclJq_u6K2wYRQm09ig6Rcp/exec'; // Paste your Deployment URL here
+const scriptURL = 'https://script.google.com/macros/s/AKfycbxarmV9UrH4plHH9H-E8G4zrnpVamnzDu96unPhOjZPlCp8LbGcQ2b1_Cw-g54Vv6rO/exec'; // Paste your Deployment URL here
 const form = document.getElementById('huntForm');
 const submitButton = document.querySelector('.btn-submit');
 

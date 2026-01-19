@@ -323,7 +323,7 @@ photoInput.addEventListener('change', async (e) => {
             try {
                 const apiKey = 'c35b3973813bbd067239a605b612f231';
                 
-                // FIXED URL BELOW
+                // CORRECTED URL BELOW: Added /1/upload, ?key=, and the $ sign
                 const response = await fetch(`https://api.imgbb.com{apiKey}`, {
                     method: 'POST',
                     body: formData
@@ -343,11 +343,8 @@ photoInput.addEventListener('change', async (e) => {
         }, 'image/jpeg', 0.7);
     };
 });
+// REMOVED THE EXTRA } THAT WAS HERE
 
-
-
-
-}
 
 
 

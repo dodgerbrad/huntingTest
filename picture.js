@@ -1,4 +1,4 @@
-const scriptURL = 'https://script.google.com/macros/s/AKfycbyhFtxSmshtW1MMx7B8c9goCRDnE7I6upA8I9hmf_5l6MbU0FGQuoYNHqVgVoPhZJL-/exec'; 
+const scriptURL = 'https://script.google.com/macros/s/AKfycby8WTIwNFWUwHnUu4rY0MF2aGYYIjGncbIbO8z4UshA4aDoVY7X20tqf2po-3Fcdb7O/exec'; 
 const form = document.getElementById('huntForm');
 const submitButton = document.querySelector('.btn-submit');
 
@@ -33,7 +33,7 @@ form.addEventListener('submit', e => {
 
     fetch(scriptURL, { 
         method: 'POST', 
-        mode: 'no-cors', 
+        mode: 'cors', 
         headers: { 'Content-Type': 'text/plain' },
         body: formData 
     })

@@ -50,13 +50,13 @@ form.addEventListener('submit', e => {
   alert('Hunt Recorded! Check the table in a moment.');
   form.reset();
   loadHistory();
-}
+});
         .catch(error => {
             alert('Error! Check signal. Your entry is still in the list for now.');
             console.error('Submission Error:', error.message);
             submitButton.disabled = false;
             submitButton.innerText = "Submit Hunt to Log";
-        }
+        });
 });
 
 

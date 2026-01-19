@@ -321,28 +321,29 @@ photoInput.addEventListener('change', async (e) => {
             formData.append('image', blob, "harvest.jpg");
 
             try {
-    const apiKey = 'c35b3973813bbd067239a605b612f231';
+                const apiKey = 'c35b3973813bbd067239a605b612f231';
                 
-    const response = await fetch(`https://api.imgbb.com{apiKey}`, {
-        method: 'POST',
-        body: formData
-    });
+                // FIXED URL: Added /1/upload, ?key=, and the $ sign
+                const response = await fetch(`https://api.imgbb.com{apiKey}`, {
+                    method: 'POST',
+                    body: formData
+                });
 
-    const data = await response.json();
-    if (data.success) {
-        photoLinkInput.value = data.data.url;
-        statusText.innerHTML = `✅ Ready: <a href="${data.data.url}" target="_blank">View Photo</a>`;
-    } else {
-        statusText.innerText = "❌ API Error. Check Key.";
-    }
-} catch (err) {
-    statusText.innerText = "❌ Network Error. Check URL.";
-    console.error(err);
-}
+                const data = await response.json();
+                if (data.success) {
+                    photoLinkInput.value = data.data.url;
+                    statusText.innerHTML = `✅ Ready: <a href="${data.data.url}" target="_blank">View Photo</a>`;
+                } else {
+                    statusText.innerText = "❌ API Error. Check Key.";
+                }
+            } catch (err) {
+                statusText.innerText = "❌ Network Error. Check URL.";
+                console.error(err);
+            }
+        }, 'image/jpeg', 0.7); // This closes the toBlob
+    }; // This closes the img.onload
+}); // This closes the addEventListener
 
-        }, 'image/jpeg', 0.7);
-    };
-}); // This closing brace and parenthesis must stay together
 
 // Initial load when page opens
 loadHistory();

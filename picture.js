@@ -296,7 +296,7 @@ photoInput.addEventListener('change', async (e) => {
     try {
         // FIX 1: Use the full /1/upload endpoint
         // FIX 2: Add your API key as a ?key= parameter in the URL
-        const apiKey = 'c35b3973813bbd067239a605b612f231'; 
+        const apiKey = '?key=c35b3973813bbd067239a605b612f231'; 
       const response = await fetch(`https://api.imgbb.com{apiKey}`, {
     method: 'POST',
     body: formData

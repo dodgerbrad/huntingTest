@@ -290,25 +290,33 @@ photoInput.addEventListener('change', async (e) => {
     previewImg.src = URL.createObjectURL(file);
     statusText.innerText = "Uploading to cloud...";
 
-    // Uploading to a free service like ImgBB (requires a free API key)
     const formData = new FormData();
     formData.append('image', file);
 
     try {
-        const response = await fetch('https://api.imgbb.com', {
-
+        // FIX 1: Use the full /1/upload endpoint
+        // FIX 2: Add your API key as a ?key= parameter in the URL
+        const apiKey = 'c35b3973813bbd067239a605b612f231'; 
+        const response = await fetch(`https://api.imgbb.com{apiKey}`, {
             method: 'POST',
+            // DO NOT set headers manually; let the browser set the boundary for FormData
             body: formData
         });
+
         const data = await response.json();
 
         if (data.success) {
             const url = data.data.url;
-            photoLinkInput.value = url; // Save the link in the hidden field
+            photoLinkInput.value = url; 
             statusText.innerHTML = `✅ Link ready: <a href="${url}" target="_blank">View Photo</a>`;
+        } else {
+            // Log specific error from ImgBB if upload fails
+            console.error("ImgBB Error:", data);
+            statusText.innerText = "❌ Upload error. Check API key.";
         }
     } catch (error) {
-        statusText.innerText = "❌ Upload failed. Try again.";
+        console.error("Fetch Error:", error);
+        statusText.innerText = "❌ Network error. Check connection.";
     }
 });
 

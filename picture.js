@@ -237,7 +237,7 @@ photoInput.addEventListener('change', async (e) => {
                 const apiKey = 'c35b3973813bbd067239a605b612f231';
                 // FIXED URL: Added /1/upload and ${} syntax
              // REPLACE your old fetch line with this:
-const response = await fetch(`https://api.imgbb.com{apiKey}`, {
+const response = await fetch(`https://api.imgbb.com/1/upload?{apiKey}`, {
     method: 'POST',
     body: formData
 });

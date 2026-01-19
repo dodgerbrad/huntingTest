@@ -236,10 +236,12 @@ photoInput.addEventListener('change', async (e) => {
             try {
                 const apiKey = 'c35b3973813bbd067239a605b612f231';
                 // FIXED URL: Added /1/upload and ${} syntax
-                const response = await fetch(`https://api.imgbb.com{apiKey}`, {
-                    method: 'POST',
-                    body: formData
-                });
+             // REPLACE your old fetch line with this:
+const response = await fetch(`https://api.imgbb.com{apiKey}`, {
+    method: 'POST',
+    body: formData
+});
+
                 const data = await response.json();
                 if (data.success) {
                     photoLinkInput.value = data.data.url;

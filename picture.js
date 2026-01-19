@@ -347,7 +347,7 @@ photoInput.addEventListener('change', async (e) => {
 
 
 
-
+}
 
 
 

@@ -6,55 +6,99 @@ const submitButton = document.querySelector('.btn-submit');
 form.addEventListener('submit', e => {
     e.preventDefault();
 
-    const formData = new FormData(form);
-    const newEntry = Object.fromEntries(formData.entries());
+    // 1. Get the latest values directly from the inputs
+    const photoLinkValue = document.getElementById('photoLink').value;
+    const huntDate = document.getElementById('huntDate').value;
+    const blind = document.getElementById('blindLocation').value;
+    const ducks = document.getElementById('ducks').value;
+    const geese = document.getElementById('geese').value;
+    const weather = document.getElementById('weather').value;
+    const notes = document.getElementById('notes').value;
 
+    // 2. Safety Check: If a photo was taken but hasn't finished uploading
+    if (document.getElementById('photoCapture').files.length > 0 && !photoLinkValue) {
+        alert("Please wait for the photo to finish uploading (Look for the ✅ Ready message).");
+        return;
+    }
+
+    // 3. Visual feedback: Disable button
     submitButton.disabled = true;
-    submitButton.innerText = "Submitting...";
+    submitButton.innerText = "Submitting to Log...";
 
+    // 4. OPTIMISTIC UI: Add the row to the table immediately so the user sees it
     const historyBody = document.getElementById('historyBody');
     const tempRow = document.createElement('tr');
     tempRow.id = "temp-row";
     tempRow.style.opacity = '0.5';
 
-    const displayDate = newEntry.huntDate.split('-').slice(1).join('/') + '/' + newEntry.huntDate.split('-')[0].slice(-2);
+    // Format date for the pending row
+    const displayDate = huntDate.split('-').slice(1).join('/') + '/' + huntDate.split('-')[0].slice(-2);
+    const photoPreview = photoLinkValue ? "📸 Uploading..." : "—";
 
     tempRow.innerHTML = `
-      <td style="font-weight:bold; color:#f6f0d7;">${displayDate} (Pending...)</td>
-      <td>${newEntry.blindLocation}</td>
-      <td style="text-align:center;">${newEntry.ducks}</td>
-      <td style="text-align:center;">${newEntry.geese}</td>
-      <td>—</td>
-      <td class="notes-cell">${newEntry.weather}</td>
-      <td class="notes-cell">${newEntry.notes}</td>
+      <td style="font-weight:bold; color:#f6f0d7;">${displayDate}</td>
+      <td>${blind}</td>
+      <td style="text-align:center;">${ducks}</td>
+      <td style="text-align:center;">${geese}</td>
+      <td style="text-align:center;">${photoPreview}</td>
+      <td class="notes-cell">${weather}</td>
+      <td class="notes-cell">${notes}</td>
     `;
-
     historyBody.prepend(tempRow);
 
-  fetch(scriptURL, { 
-  method: 'POST', 
-  mode: 'no-cors', // Bypasses the pre-flight check that Google fails
-  headers: {
-    'Content-Type': 'application/x-www-form-urlencoded' // Use this instead of text/plain for 2026
-  },
-  body: new URLSearchParams(formData).toString() // Converts your form into the format Google likes best
-})
+    // 5. Build the data package for Google Sheets
+    // We use URLSearchParams because it is the most reliable format for Safari 2026
+    const params = new URLSearchParams();
+    params.append('huntDate', huntDate);
+    params.append('blindLocation', blind);
+    params.append('ducks', ducks);
+    params.append('geese', geese);
+    params.append('photoLink', photoLinkValue); // The ImgBB link
+    params.append('weather', weather);
+    params.append('notes', notes);
+
+    // 6. Send to Google Sheets
+    fetch(scriptURL, { 
+        method: 'POST', 
+        mode: 'no-cors', // Essential for Google Apps Script redirects
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: params.toString() 
+    })
     .then(() => {
-        alert('Hunt Recorded! Check the table in a moment.');
+        // success (no-cors always assumes success if the network doesn't crash)
+        alert('Hunt Recorded Successfully!');
+        
+        // Reset the form and the photo UI
         form.reset();
-        if (document.getElementById('photoPreviewBox')) document.getElementById('photoPreviewBox').style.display = 'none';
-        if (document.getElementById('temp-row')) document.getElementById('temp-row').remove();
+        document.getElementById('photoPreviewBox').style.display = 'none';
+        document.getElementById('photoLink').value = ""; // Clear for next entry
+        
         submitButton.disabled = false;
         submitButton.innerText = "Submit Hunt to Log";
+
+        // Remove the "pending" row and refresh the actual data
+        if (document.getElementById('temp-row')) {
+            document.getElementById('temp-row').remove();
+        }
         loadHistory();
     })
     .catch(error => {
-        alert('Error! Check signal.');
-        console.error('Submission Error:', error.message);
+        alert('Submission Failed. Check your cellular signal.');
+        console.error('Submission Error:', error);
+        
+        // Highlight the pending row as an error
+        if (document.getElementById('temp-row')) {
+            document.getElementById('temp-row').style.color = "red";
+            document.getElementById('temp-row').style.opacity = "1";
+        }
+        
         submitButton.disabled = false;
-        submitButton.innerText = "Submit Hunt to Log";
+        submitButton.innerText = "Retry Submission";
     });
 });
+
 
 // --- 2. DATA LOADING & FILTERING ---
 let allHunts = []; 

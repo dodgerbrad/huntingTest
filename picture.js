@@ -219,7 +219,9 @@ const statusText = document.getElementById('uploadStatus');
 photoInput.addEventListener('change', async (e) => {
     const file = e.target.files[0];
     if (!file) return;
+
     statusText.innerText = "Processing...";
+
     const img = new Image();
     img.src = URL.createObjectURL(file);
     img.onload = () => {
@@ -229,17 +231,36 @@ photoInput.addEventListener('change', async (e) => {
         canvas.width = img.width * scale;
         canvas.height = img.height * scale;
         canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+
         canvas.toBlob(async (blob) => {
             statusText.innerText = "Uploading (Small Size)...";
             const formData = new FormData();
             formData.append('image', blob, "harvest.jpg");
+
             try {
                 const apiKey = 'c35b3973813bbd067239a605b612f231';
-                // FIXED URL: Added /1/upload and ${} syntax
-             // REPLACE your old fetch line with this:
-const response = await fetch(`https://api.imgbb.com/1/upload?{apiKey}`, {
-    method: 'POST',
-    body: formData
+                
+                // FIXED URL: Including the path /1/upload, the ?key= and the ${} syntax
+                const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    photoLinkInput.value = data.data.url;
+                    statusText.innerHTML = `✅ Ready: <a href="${data.data.url}" target="_blank">View Photo</a>`;
+                } else {
+                    statusText.innerText = "❌ API Error. Check Key.";
+                }
+            } catch (err) {
+                statusText.innerText = "❌ Network Error. Check URL.";
+                console.error("Detailed Error:", err);
+            }
+        }, 'image/jpeg', 0.7);
+    };
+});
+   body: formData
 });
 
                 const data = await response.json();

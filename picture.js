@@ -273,8 +273,24 @@ document.addEventListener("visibilitychange", () => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    if (document.getElementById('huntDate')) document.getElementById('huntDate').value = new Date().toISOString().split('T')[0];
+    const dateInput = document.getElementById('huntDate');
+    if (dateInput) {
+        // 1. Get current time in your local timezone (CST)
+        const now = new Date();
+        
+        // 2. Subtract the timezone offset so it doesn't jump to tomorrow
+        const offset = now.getTimezoneOffset() * 60000; 
+        const localISOTime = new Date(now - offset).toISOString().split('T')[0];
+        
+        // 3. Set the input to the correct LOCAL date (January 18)
+        dateInput.value = localISOTime;
+    }
+
+    // REMOVED the old UTC line from here!
+
     if (document.getElementById('ducks')) document.getElementById('ducks').setAttribute('inputmode', 'numeric');
     if (document.getElementById('geese')) document.getElementById('geese').setAttribute('inputmode', 'numeric');
+    
     loadHistory();
 });
+

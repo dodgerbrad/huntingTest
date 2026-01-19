@@ -260,23 +260,7 @@ photoInput.addEventListener('change', async (e) => {
         }, 'image/jpeg', 0.7);
     };
 });
-   body: formData
-});
 
-                const data = await response.json();
-                if (data.success) {
-                    photoLinkInput.value = data.data.url;
-                    statusText.innerHTML = `✅ Ready: <a href="${data.data.url}" target="_blank">View Photo</a>`;
-                } else {
-                    statusText.innerText = "❌ API Error.";
-                }
-            } catch (err) {
-                statusText.innerText = "❌ Network Error.";
-                console.error(err);
-            }
-        }, 'image/jpeg', 0.7);
-    };
-});
 
 // --- 5. INITIALIZATION & UTILS ---
 document.getElementById('seasonFilter').addEventListener('change', (e) => renderTable(allHunts, e.target.value));

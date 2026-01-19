@@ -35,29 +35,43 @@ form.addEventListener('submit', e => {
     historyBody.prepend(tempRow);
 
     // 4. Send to Google Sheets
+  // 4. Send to Google Sheets
   fetch(scriptURL, { 
-  method: 'POST', 
-  // This bypasses Safari's strict 'pre-flight' checks
-  mode: 'no-cors', 
-  headers: {
-    'Content-Type': 'text/plain' 
-  },
-  body: formData 
-})
-.then(() => {
-  // NOTE: 'no-cors' mode won't let you read the Google response, 
-  // so we assume success if the code reaches here.
-  alert('Hunt Recorded! Check the table in a moment.');
-  form.reset();
-  loadHistory();
-});
-        .catch(error => {
-            alert('Error! Check signal. Your entry is still in the list for now.');
-            console.error('Submission Error:', error.message);
-            submitButton.disabled = false;
-            submitButton.innerText = "Submit Hunt to Log";
-        });
-});
+    method: 'POST', 
+    // This bypasses Safari's strict 'pre-flight' checks
+    mode: 'no-cors', 
+    headers: {
+      'Content-Type': 'text/plain' 
+    },
+    body: formData 
+  })
+  .then(() => {
+    // NOTE: 'no-cors' mode won't let you read the Google response, 
+    // so we assume success if the code reaches here.
+    alert('Hunt Recorded! Check the table in a moment.');
+    form.reset();
+    
+    // Clear the photo preview if you have one
+    if (document.getElementById('photoPreviewBox')) {
+        document.getElementById('photoPreviewBox').style.display = 'none';
+    }
+    
+    // Remove the temporary "Pending" row and refresh
+    if (document.getElementById('temp-row')) {
+        document.getElementById('temp-row').remove();
+    }
+    
+    submitButton.disabled = false;
+    submitButton.innerText = "Submit Hunt to Log";
+    loadHistory();
+  }) // <--- NO SEMICOLON HERE
+  .catch(error => {
+      alert('Error! Check signal. Your entry is still in the list for now.');
+      console.error('Submission Error:', error.message);
+      submitButton.disabled = false;
+      submitButton.innerText = "Submit Hunt to Log";
+  });
+
 
 
 // Function to fetch and display the history

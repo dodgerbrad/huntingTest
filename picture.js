@@ -67,22 +67,42 @@ function loadHistory() {
             return response.json();
         })
         .then(data => {
-            allHunts = data;
-            allHunts.sort((a, b) => new Date(a.huntDate) - new Date(b.huntDate));
+            // 1. Validate that we received an array of hunts
+            if (Array.isArray(data)) {
+                allHunts = data;
+                // Sort oldest to newest for totals calculation logic
+                allHunts.sort((a, b) => new Date(a.huntDate) - new Date(b.huntDate));
+            } else {
+                console.error("Received unexpected data format (not an array):", data);
+                allHunts = []; 
+            }
+
+            // 2. Build the Season Filter dropdown
             const filter = document.getElementById('seasonFilter');
             const seasons = [...new Set(allHunts.map(h => getSeason(h.huntDate)))];
+            
             let options = '<option value="all">All Time (Grand Total)</option>';
             seasons.sort().reverse().forEach(s => {
-                if (s !== "Invalid Date") options += `<option value="${s}">${s} Season</option>`;
+                if (s !== "Invalid Date" && s !== "Unknown") {
+                    options += `<option value="${s}">${s} Season</option>`;
+                }
             });
             filter.innerHTML = options;
+
+            // 3. Auto-select the current 2025-2026 season
             const currentSeasonStr = getSeason(new Date().toISOString());
-            filter.value = seasons.includes(currentSeasonStr) ? currentSeasonStr : (seasons[0] || "all");
+            if (seasons.includes(currentSeasonStr)) {
+                filter.value = currentSeasonStr;
+            } else {
+                filter.value = seasons[0] || "all";
+            }
+
+            // 4. Draw the table
             renderTable(allHunts, filter.value);
         })
         .catch(error => {
             console.error('Error loading history:', error);
-            historyBody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Failed to load logs.</td></tr>';
+            historyBody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Failed to load logs. Check your Spreadsheet ID.</td></tr>';
         });
 }
 

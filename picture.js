@@ -174,9 +174,12 @@ function renderTable(hunts, filterValue) {
     displayData.forEach(row => { 
         totalDucks += parseInt(row.ducks || 0);
         totalGeese += parseInt(row.geese || 0);
-        const photoCell = row.photoLink 
-    ? `<button class="view-btn" onclick="window.open('${row.photoLink}', '_blank')">📸 View</button>` 
-    : '<span class="no-photo">—</span>';
+     const photoCell = row.photoLink 
+    ? `<div class="thumb-container" onclick="window.open('${row.photoLink}', '_blank')">
+         <img src="${row.photoLink}" class="mini-thumb" alt="Harvest">
+         <div class="thumb-overlay">View</div>
+       </div>` 
+    : '—';
         const tr = document.createElement('tr');
         let d = row.huntDate ? row.huntDate.toString().split('T')[0].split('-') : null;
         let displayDate = d ? `${parseInt(d[1])}/${parseInt(d[2])}/${d[0].slice(-2)}` : "N/A";

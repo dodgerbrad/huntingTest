@@ -174,7 +174,9 @@ function renderTable(hunts, filterValue) {
     displayData.forEach(row => { 
         totalDucks += parseInt(row.ducks || 0);
         totalGeese += parseInt(row.geese || 0);
-        const photoCell = row.photoLink ? `<button onclick="window.open('${row.photoLink}', '_blank')" style="cursor:pointer;">📸 View</button>` : '—';
+        const photoCell = row.photoLink 
+    ? `<button class="view-btn" onclick="window.open('${row.photoLink}', '_blank')">📸 View</button>` 
+    : '<span class="no-photo">—</span>';
         const tr = document.createElement('tr');
         let d = row.huntDate ? row.huntDate.toString().split('T')[0].split('-') : null;
         let displayDate = d ? `${parseInt(d[1])}/${parseInt(d[2])}/${d[0].slice(-2)}` : "N/A";

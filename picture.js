@@ -286,47 +286,38 @@ photoInput.addEventListener('change', async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // 1. Show preview box and image immediately
     document.getElementById('photoPreviewBox').style.display = 'block';
     previewImg.src = URL.createObjectURL(file);
     statusText.innerText = "Uploading to cloud...";
 
-    // 2. Prepare the data for ImgBB
     const formData = new FormData();
     formData.append('image', file);
 
     try {
-        // Your specific ImgBB API Key
         const apiKey = 'c35b3973813bbd067239a605b612f231'; 
 
-        // 3. The Fetch Call
-        // FIX: Added /1/upload and the correct ?key= syntax using backticks
-         const response = await fetch(`https://api.imgbb.com{apiKey}`, {
+        // UPDATED URL STRUCTURE
+        const response = await fetch(`https://api.imgbb.com{apiKey}`, {
             method: 'POST',
             body: formData
         });
 
-        // 4. Handle the response
         const data = await response.json();
 
         if (data.success) {
             const url = data.data.url;
-            
-            // Save the URL into the hidden input so Google Sheets gets it
             photoLinkInput.value = url; 
-            
-            // Success Message
             statusText.innerHTML = `✅ Link ready: <a href="${url}" target="_blank">View Photo</a>`;
         } else {
-            console.error("ImgBB Error Response:", data);
+            console.error("ImgBB Error:", data);
             statusText.innerText = "❌ Upload error. Check API key.";
         }
     } catch (error) {
-        // This usually catches DNS (Network) or CORS errors
         console.error("Detailed Fetch Error:", error);
-        statusText.innerText = "❌ Connection error. Use GitHub HTTPS link.";
+        statusText.innerText = "❌ Connection error. Check URL formatting.";
     }
 });
+
 
 
 

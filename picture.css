@@ -256,6 +256,11 @@ tbody tr:nth-child(even) {
     text-align: center;
     padding: 2px 0;
 }
+#historyTable th:nth-child(5), 
+#historyTable td:nth-child(5) {
+    width: 60px;
+    text-align: center;
+}
 
 
 

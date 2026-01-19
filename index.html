@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <!-- Prevents zoom-on-focus and fits content around the iPhone notch -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <title>GT Hunt Log</title>
+
+
+    <link rel="apple-touch-icon" href="GT.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Duck Log">
+    <link rel="apple-touch-icon" href="GT-apple-touch.png">
+
+    <!-- Link to your manifest (Remember the relative path fix!) -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="picture.css">
+</head>
+
+<body>
+
+    <div id="box">
+        <h1>Golden Triangle Hunting Club</h1>
+
+        <form id="huntForm">
+            <!-- 1. Hunt Details Section -->
+            <div class="form-section">
+                <h3>Hunt Details</h3>
+                <label for="huntDate">Date</label>
+                <input type="date" id="huntDate" name="huntDate" required>
+
+                <label for="blindLocation">Blind / Pit</label>
+                <select id="blindLocation" name="blindLocation" required>
+                    <option value="" disabled selected>Select Location</option>
+                    <option value="Golden Triangle">Golden Triangle</option>
+                    <option value="Field Hunting">Field Hunting</option>
+                    <option value="Other">Other</option>
+
+                </select>
+
+                <label for="weather">Wind/Weather</label>
+                <input type="text" id="weather" name="weather" placeholder="e.g. NW 15mph, Overcast">
+            </div>
+
+            <!-- 2. Harvest Section -->
+            <div class="form-section">
+                <h3>Harvest Count</h3>
+
+                <div class="input-row">
+                    <label>Ducks</label>
+                    <input type="number" id="ducks" name="ducks" min="0" value="0">
+                </div>
+                <div class="input-row">
+                    <label>Geese</label>
+                    <input type="number" id="geese" name="geese" min="0" value="0">
+                </div>
+            </div>
+            <!-- Add this inside your <form id="huntForm">, perhaps before the Notes section -->
+            <div class="form-section">
+                <h3>Hunt Media</h3>
+                <label for="photoCapture">Take a Photo of the Harvest</label>
+                <!-- accept="image/*" filters for photos; capture="camera" opens the native camera -->
+                <input type="file" id="photoCapture" accept="image/*" capture="camera">
+
+                <!-- This hidden input will store the generated link to be submitted with the form -->
+                <input type="hidden" id="photoLink" name="photoLink">
+
+                <div id="photoPreviewBox" style="margin-top:10px; display:none;">
+                    <img id="imagePreview" src="" style="max-width:100%; border-radius:8px;">
+                    <p id="uploadStatus" style="font-size:0.8rem; color:#666;">Uploading to cloud...</p>
+                </div>
+            </div>
+
+
+            <!-- 3. Notes Section -->
+            <div class="form-section">
+                <label for="notes">Notes/Observations</label>
+                <textarea id="notes" rows="3" name="notes"
+                    placeholder="Bird movement, dog performance, etc."></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit">Submit Hunt to Log</button>
+        </form>
+
+        <!-- 4. Recent Logs Table -->
+        <h2 style="margin-top: 40px;">Club History</h2>
+        <div class="form-section">
+            <label for="seasonFilter">Filter by Season</label>
+            <select id="seasonFilter">
+                <option value="all">All Time (Grand Total)</option>
+                <option value="2025-2026">2025-2026 Season</option>
+                <option value="2024-2025">2024-2025 Season</option>
+                <option value="2023-2024">2023-2024 Season</option>
+                <option value="2022-2023">2022-2023 Season</option>
+                <option value="2021-2022">2021-2022 Season</option>
+                <option value="2020-2021">2020-2021 Season</option>
+                <option value="2019-2020">2019-2020 Season</option>
+                <option value="2018-2019">2018-2019 Season</option>
+                <option value="2017-2018">2017-2018 Season</option>
+                <option value="2016-2017">2016-2017 Season</option>
+            </select>
+        </div>
+
+        <div class="table-container">
+            <table id="historyTable">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Blind</th>
+                        <th>Ducks</th>
+                        <th>Geese</th>
+                        <th>Photo</th>
+                        <th>Weather</th>
+                        <th>Notes</th>
+                        
+                    </tr>
+                </thead>
+                <tbody id="historyBody">
+                    <!-- Data from your JS will load here -->
+                    <tr>
+                        <td colspan="5" style="text-align:center; padding:20px;">Loading logs...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- Native Modal for Notes/Weather (2026 Compatible) -->
+    <dialog id="noteModal"
+        style="border:none; border-radius:12px; padding:20px; background:#f6f0d7; color:#1b2d18; max-width:80vw; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+        <h3 style="margin-top:0;">Details</h3>
+        <p id="modalContent" style="white-space: pre-wrap; line-height: 1.4;"></p>
+        <button onclick="document.getElementById('noteModal').close()"
+            style="background:#1b2d18; color:white; border:none; padding:10px 20px; border-radius:5px; width:100%;">Close</button>
+    </dialog>
+
+
+    <script src="picture.js"></script>
+</body>
+
+</html>

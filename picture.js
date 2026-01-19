@@ -257,9 +257,10 @@ photoInput.addEventListener('change', async (e) => {
                 statusText.innerText = "❌ Network Error. Check URL.";
                 console.error("Detailed Error:", err);
             }
-        }, 'image/jpeg', 0.7);
-    };
-});
+        }, 'image/jpeg', 0.7); // Closes toBlob
+    }; // Closes img.onload
+}); // Closes addEventListener
+
 
 
 // --- 5. INITIALIZATION & UTILS ---
